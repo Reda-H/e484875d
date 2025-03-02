@@ -11,8 +11,11 @@ export const SET_ARCHIVE_FAILURE = "SET_ARCHIVE_FAILURE";
 export const SET_UNARCHIVE_SUCCESS = "SET_UNARCHIVE_SUCCESS";
 export const SET_UNARCHIVE_FAILURE = "SET_UNARCHIVE_FAILURE";
 
-export const GET_ARCHIVE_SUCCESS = "GET_ARCHIVE_SUCCESS";
-export const GET_ARCHIVE_FAILURE = "GET_ARCHIVE_FAILURE";
+export const ARCHIVE_ALL_SUCCESS = "ARCHIVE_ALL_SUCCESS";
+export const ARCHIVE_ALL_FAILURE = "ARCHIVE_ALL_FAILURE";
+
+export const UNARCHIVE_ALL_SUCCESS = "UNARCHIVE_ALL_SUCCESS";
+export const UNARCHIVE_ALL_FAILURE = "UNARCHIVE_ALL_FAILURE";
 
 const initialState = {
     calls: [],
@@ -21,7 +24,6 @@ const initialState = {
 }
 
 const reducer = (state = initialState, action) => {
-    console.log("running reducer", action.type);
     if (action.type === GET_CALLS_SUCCESS)
         return { ...state, calls: action.payload, archives: action.payload.filter((call) => call.is_archived) };
 
@@ -45,11 +47,11 @@ const reducer = (state = initialState, action) => {
     else if (action.type === SET_UNARCHIVE_FAILURE)
         return { ...state, error: action.payload };
 
-    else if (action.type === GET_ARCHIVE_SUCCESS)
-        return { ...state, archives: action.payload };
+    else if (action.type === ARCHIVE_ALL_SUCCESS)
+        return { ...state, calls: [], archives: [...state.calls, ...state.archives] }
 
-    else if (action.type === GET_ARCHIVE_FAILURE)
-        return { ...state, error: action.payload };
+    else if (action.type === UNARCHIVE_ALL_SUCCESS)
+        return { ...state, calls: [...state.calls, ...state.archives], archives: [] }
 
     else return state;
 }

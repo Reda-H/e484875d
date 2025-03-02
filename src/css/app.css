@@ -35,9 +35,30 @@
 
 .archived-tag {
   height: 111px;
-  background-color: #fcbc2b;
+  background-color: rgb(5, 175, 181);
   width: 16px;
   z-index: 2;
+}
+
+.date-container {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  white-space: nowrap;
+  padding-left: 8px;
+  padding-bottom: 8px;
+}
+
+.dash-line {
+  flex-grow: 1;
+  border-bottom: 2px dashed #00000049;
+  margin: 0 10px;
+}
+
+.date {
+  flex-shrink: 0;
+  font-weight: bold;
+  color: #0000009a;
 }
 
 .nunito-sans-100 {

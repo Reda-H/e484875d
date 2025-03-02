@@ -1,32 +1,11 @@
 import { Box, Button, Card } from "@mui/material";
 import { ArchiveIcon, PhoneInbound, PhoneOutbound } from "../icons";
+import { formatCallDuration, formatPhoneNumber } from "../services/utils";
 
-const CallEntry = ({ call, archived, action }) => {
+const CallEntry = ({ call, action }) => {
   const callDirection = {
     inbound: <PhoneInbound />,
     outbound: <PhoneOutbound />,
-  };
-
-  const formatCallDuration = (duration) => {
-    const seconds = duration % 60;
-    const minutes = Math.floor(duration / 60);
-    if (minutes) return `${minutes}m ${seconds}s`;
-    return `${seconds}s`;
-  };
-
-  const formatPhoneNumber = (phoneNumber) => {
-    const strPhoneNumber = phoneNumber.toString();
-    if (strPhoneNumber.length === 10)
-      return `(${strPhoneNumber.slice(0, 3)}) ${strPhoneNumber.slice(
-        3,
-        6
-      )}-${strPhoneNumber.slice(6)}`;
-    else if (strPhoneNumber.length === 11)
-      return `+${strPhoneNumber.slice(0, 1)} (${strPhoneNumber.slice(
-        1,
-        4
-      )}) ${strPhoneNumber.slice(4, 7)}-${strPhoneNumber.slice(7)}`;
-    return strPhoneNumber;
   };
 
   return (
@@ -120,30 +99,13 @@ const CallEntry = ({ call, archived, action }) => {
           >
             via {formatPhoneNumber(call.via)}
           </p>
-
-          {!archived && <Button
+          <Button
             variant="contained"
             endIcon={<ArchiveIcon />}
             sx={{
               marginRight: "14px",
               borderRadius: 0,
-              backgroundColor: "#fcbc2b",
-              "&:hover": {
-                backgroundColor: "#DDA72E",
-              },
-              boxShadow: "none",
-            }}
-            onClick={() => action(call)}
-          >
-            Archive
-          </Button>}
-          {archived && <Button
-            variant="contained"
-            endIcon={<ArchiveIcon />}
-            sx={{
-              marginRight: "14px",
-              borderRadius: 0,
-              backgroundColor: "rgba(5, 181, 139, 0.8)",
+              backgroundColor: "rgb(5, 175, 181)",
               "&:hover": {
                 backgroundColor: "#05B58B",
               },
@@ -153,11 +115,10 @@ const CallEntry = ({ call, archived, action }) => {
             }}
             onClick={() => action(call)}
           >
-            Unarchive
-          </Button>}
+            Details
+          </Button>
         </Box>
       </div>
-      {archived && <div className="archived-tag"></div>}
     </Card>
   );
 };

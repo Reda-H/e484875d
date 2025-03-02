@@ -1,22 +1,32 @@
-import { connect, useSelector } from "react-redux";
-import { getArchives, setUnarchiveCall } from "../services/api";
-import { List, ListItem } from "@mui/material";
+import { connect } from "react-redux";
+import { getCalls, setUnarchiveCall, unarchiveAllCalls } from "../services/api";
+import { Button, List, ListItem } from "@mui/material";
 import CallEntry from "./CallEntry.jsx";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { formatDate, groupCallsByDay } from "../services/utils.js";
 
 const ArchiveFeed = (props) => {
+    const [callsPerDay, setCallsPerDay] = useState([]);
 
     useEffect(() => {
-        props.getArchives();
+        props.getCalls();
     }, []);
+
+    useEffect(() => {
+        setCallsPerDay(groupCallsByDay(props.archives.filter(call => call.is_archived)));
+    }, [props.archives]);
 
     const unarchive = (call) => {
         props.setUnarchiveCall(call.id);
     }
 
+    const handleUnarchiveAllCalls = () => {
+        props.unarchiveAllCalls(props.archives.map(call => call.id));
+    }
+
     return (
         <div>
-            <List
+            {callsPerDay.length ? <List
                 sx={{
                     width: "100%",
                     maxWidth: 360,
@@ -26,23 +36,35 @@ const ArchiveFeed = (props) => {
                     boxShadow: "none",
                     msOverflowStyle: "none",
                     scrollbarWidth: "none",
-                    gap: "16px",
+                    paddingBottom: "32px"
                 }}
                 subheader={<li />}
             >
-                {props.archives && props.archives.map((call) => (
-                    <ListItem
-                        key={call.id}
-                        sx={{
-                            padding: 0,
-                            paddingBottom: "16px",
-                            backgroundColor: "transparent",
-                        }}
-                    >
-                        <CallEntry call={call} archived action={unarchive} />
-                    </ListItem>
+                {callsPerDay.map((calls, index) => (
+                    <div key={index} style={{ paddingBottom: "20px" }}>
+                        {calls.length > 0 && <div className="date-container">
+                            <span className="date">{formatDate(calls[0].created_at)}</span>
+                            <span className="dash-line"></span>
+                        </div>}
+                        {calls && calls.length > 0 && calls.map((call) => (
+                            <ListItem
+                                key={call.id}
+                                sx={{
+                                    padding: 0,
+                                    paddingBottom: "10px",
+                                    ":last-child": {
+                                        paddingBottom: 0,
+                                    },
+                                    backgroundColor: "transparent",
+                                }}
+                            >
+                                <CallEntry call={call} action={props.toggleDrawer} />
+                            </ListItem>
+                        ))}
+                    </div>
                 ))}
-            </List>
+            </List> : <div style={{ display: 'flex', width: "auto", minHeight: "100px", justifyContent: "center", alignItems: 'center' }}><h2>No Archived Calls</h2></div>}
+            {callsPerDay.length ? <Button sx={{ position: "absolute", bottom: "50px", right: "10px" }} variant='contained' onClick={handleUnarchiveAllCalls}>Unarchive All</Button> : null}
         </div>
     );
 }
@@ -55,4 +77,4 @@ const mapStateToProps = (state) => {
     }
 }
 
-export default connect(mapStateToProps, { getArchives, setUnarchiveCall })(ArchiveFeed);
+export default connect(mapStateToProps, { getCalls, setUnarchiveCall, unarchiveAllCalls })(ArchiveFeed);

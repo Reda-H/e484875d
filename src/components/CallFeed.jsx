@@ -1,21 +1,33 @@
-import { Box, List, ListItem } from "@mui/material";
+import { Button, List, ListItem } from "@mui/material";
 import CallEntry from "./CallEntry.jsx";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { connect } from "react-redux";
-import { getCalls, setArchiveCall } from "../services/api.js";
+import { archiveAllCalls, getCalls, setArchiveCall } from "../services/api.js";
+import { formatDate, groupCallsByDay } from "../services/utils.js";
 
 const CallFeed = (props) => {
+    const [callsPerDay, setCallsPerDay] = useState([]);
+
     useEffect(() => {
         props.getCalls();
     }, []);
+
+
+    useEffect(() => {
+        setCallsPerDay(groupCallsByDay(props.calls.filter(call => !call.is_archived)));
+    }, [props.calls]);
 
     const archive = (call) => {
         props.setArchiveCall(call.id);
     }
 
+    const handleArchiveAllCalls = () => {
+        props.archiveAllCalls(props.calls.map(call => call.id));
+    }
+
     return (
         <div>
-            <List
+            {callsPerDay.length ? <List
                 sx={{
                     width: "100%",
                     maxWidth: 360,
@@ -25,23 +37,36 @@ const CallFeed = (props) => {
                     boxShadow: "none",
                     msOverflowStyle: "none",
                     scrollbarWidth: "none",
-                    gap: "16px",
+                    paddingBottom: "30px"
                 }}
                 subheader={<li />}
             >
-                {props.calls && props.calls.filter(call => !call.is_archived).map((call) => (
-                    <ListItem
-                        key={call.id}
-                        sx={{
-                            padding: 0,
-                            paddingBottom: "16px",
-                            backgroundColor: "transparent",
-                        }}
-                    >
-                        <CallEntry call={call} action={archive} />
-                    </ListItem>
+                {callsPerDay.map((calls, index) => (
+                    <div key={index} style={{ paddingBottom: "20px" }}>
+                        {calls.length && <div className="date-container">
+                            <span className="date">{formatDate(calls[0].created_at)}</span>
+                            <span className="dash-line"></span>
+                        </div>}
+                        {calls && calls.filter(call => !call.is_archived).map((call) => (
+                            <ListItem
+                                key={call.id}
+                                sx={{
+                                    padding: 0,
+                                    paddingBottom: "10px",
+                                    ":last-child": {
+                                        paddingBottom: 0,
+                                    },
+                                    backgroundColor: "transparent",
+                                }}
+                            >
+                                <CallEntry call={call} action={props.toggleDrawer} />
+                            </ListItem>
+                        ))}
+                    </div>
                 ))}
-            </List>
+            </List> : <div style={{ display: 'flex', width: "auto", minHeight: "100px", justifyContent: "center", alignItems: 'center' }}><h2>No Calls at the moment ! Come back a bit later :)</h2></div>}
+            {callsPerDay.length ? <Button sx={{ position: "absolute", bottom: "50px", right: "10px" }} variant='contained' onClick={handleArchiveAllCalls}>Archive all</Button>
+                : null}
         </div>
     );
 }
@@ -55,4 +80,4 @@ const mapStateToProps = (state) => {
     }
 }
 
-export default connect(mapStateToProps, { getCalls, setArchiveCall })(CallFeed);
+export default connect(mapStateToProps, { getCalls, setArchiveCall, archiveAllCalls })(CallFeed);
