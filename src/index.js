@@ -1,6 +1,17 @@
-import './css/body.css';
-import './css/app.css';
-import './css/header.css';
+import "./css/body.css";
+import "./css/app.css";
+import "./css/header.css";
 
-import App from './App.jsx';
+import ReactDOM from 'react-dom';
+import App from "./App.jsx";
+import { HashRouter } from "react-router-dom/cjs/react-router-dom.js";
+import { Provider } from "react-redux";
 
+ReactDOM.render(
+    // <Provider store={store}>
+    <HashRouter>
+        <App />
+    </HashRouter>
+    // </Provider>,
+    , document.getElementById("root")
+);

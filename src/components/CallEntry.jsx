@@ -36,7 +36,7 @@ const CallEntry = ({ call }) => {
         display: "flex",
         flexDirection: "column",
         boxShadow: "none",
-        borderRadius: "14px",
+        borderRadius: "12px",
       }}
     >
       <Box
@@ -45,7 +45,7 @@ const CallEntry = ({ call }) => {
           display: "flex",
           flexDirection: "row",
           gap: "16px",
-          padding: "16px",
+          padding: "12px",
         }}
       >
         <div
@@ -73,15 +73,15 @@ const CallEntry = ({ call }) => {
               {call.call_type}
             </span>
             <span
-              className="nunito-sans-500"
-              style={{ fontSize: "14px", fontWeight: "bold" }}
+              className="nunito-sans-600"
+              style={{ fontSize: "14px" }}
             >
               {formatCallDuration(call.duration)}
             </span>
           </div>
           <span
-            className="nunito-sans-500"
-            style={{ fontSize: "18px", fontWeight: "bold" }}
+            className="nunito-sans-800"
+            style={{ fontSize: "18px" }}
           >
             {call.direction === "inbound"
               ? formatPhoneNumber(call.from)
@@ -109,14 +109,13 @@ const CallEntry = ({ call }) => {
         }}
       >
         <p
-          className="noto-sans-500"
+          className="noto-sans-600"
           style={{
-            fontWeight: "bold",
             marginTop: "8px",
             marginBottom: "8px",
           }}
         >
-          via {call.via}
+          via {formatPhoneNumber(call.via)}
         </p>
 
         <Button
