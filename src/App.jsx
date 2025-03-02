@@ -7,7 +7,7 @@ import Footer from "./components/Footer.jsx";
 
 import ArchiveFeed from "./components/ArchiveFeed.jsx";
 import CallFeed from "./components/CallFeed.jsx";
-import { archiveAllCalls, setArchiveCall } from "./services/api.js";
+import { archiveAllCalls, setArchiveCall, setUnarchiveCall } from "./services/api.js";
 import { Box, Button, Chip, Divider, Drawer, Stack, Typography } from "@mui/material";
 import { formatPhoneNumber } from "./services/utils.js";
 
@@ -35,9 +35,10 @@ const App = (props) => {
     return `${minutes}m ${remainingSeconds}s`;
   };
 
-  const onArchive = (id) => {
+  const onArchive = (call) => {
     toggleOpenDrawer();
-    props.setArchiveCall(id);
+    if (call.is_archived) props.setUnarchiveCall(call.id)
+    else props.setArchiveCall(call.id);
   }
 
   return (
@@ -123,7 +124,7 @@ const App = (props) => {
                 variant="contained"
                 color="primary"
                 fullWidth
-                onClick={() => onArchive(selectedCall.id)}
+                onClick={() => onArchive(selectedCall)}
               >
                 {selectedCall.is_archived ? "Unarchive Call" : "Archive Call"}
               </Button>
@@ -143,4 +144,4 @@ const mapStateToProps = (state) => {
   })
 }
 
-export default connect(mapStateToProps, { archiveAllCalls, setArchiveCall })(App);
+export default connect(mapStateToProps, { archiveAllCalls, setArchiveCall, setUnarchiveCall })(App);
