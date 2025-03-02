@@ -24,8 +24,8 @@ const ArchiveIcon = (props) => (
       <path
         d="M7.99992 7.83333V11.8333M7.99992 11.8333L9.66659 10.1667M7.99992 11.8333L6.33325 10.1667"
         stroke="white"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   </SvgIcon>

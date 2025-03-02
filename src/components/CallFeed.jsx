@@ -1,28 +1,13 @@
 import { Box, List, ListItem } from "@mui/material";
 import CallEntry from "./CallEntry.jsx";
 import { useEffect, useState } from "react";
+import { connect } from "react-redux";
 import { getCalls } from "../services/api.js";
 
-const CallFeed = () => {
-    const [calls, setCalls] = useState([]);
-    const [error, setError] = useState(null);
+const CallFeed = (props) => {
 
     useEffect(() => {
-        const fetchCalls = async () => {
-            try {
-                const response = await getCalls();
-                setCalls(
-                    response.data.sort(
-                        (a, b) =>
-                            new Date(a.created_at).getTime() -
-                            new Date(b.created_at).getTime()
-                    )
-                );
-            } catch (err) {
-                setError(err.message);
-            }
-        };
-        fetchCalls();
+        props.getCalls();
     }, []);
 
     return (
@@ -33,7 +18,6 @@ const CallFeed = () => {
                     maxWidth: 360,
                     position: "relative",
                     overflow: "auto",
-                    maxHeight: 526,
                     "& ul": { padding: 0 },
                     boxShadow: "none",
                     msOverflowStyle: "none",
@@ -42,7 +26,7 @@ const CallFeed = () => {
                 }}
                 subheader={<li />}
             >
-                {calls.map((call) => (
+                {props.calls && props.calls.map((call) => (
                     <ListItem
                         key={call.id}
                         sx={{
@@ -59,4 +43,13 @@ const CallFeed = () => {
     );
 }
 
-export default CallFeed;
+
+const mapStateToProps = (state) => {
+    return {
+        calls: state.calls,
+        archives: state.archives,
+        error: state.error
+    }
+}
+
+export default connect(mapStateToProps, { getCalls })(CallFeed);
