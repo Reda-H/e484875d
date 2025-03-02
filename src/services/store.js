@@ -23,23 +23,24 @@ const initialState = {
 const reducer = (state = initialState, action) => {
     console.log("running reducer", action.type);
     if (action.type === GET_CALLS_SUCCESS)
-        return { ...state, calls: action.payload };
+        return { ...state, calls: action.payload, archives: action.payload.filter((call) => call.is_archived) };
 
     else if (action.type === GET_CALLS_FAILURE)
         return { ...state, error: action.payload };
 
-    else if (action.type === SET_ARCHIVE_SUCCESS)
+    else if (action.type === SET_ARCHIVE_SUCCESS) {
         return {
             ...state,
-            calls: state.calls.filter((call) => call.id !== action.payload.id),
-            archives: [...state.archives, action.payload]
+            calls: state.calls.filter((call) => call.id !== action.payload),
+            archives: state.archives
         };
+    }
 
     else if (action.type === SET_ARCHIVE_FAILURE)
         return { ...state, error: action.payload };
 
     else if (action.type === SET_UNARCHIVE_SUCCESS)
-        return { ...state, calls: [...state.calls, action.payload], archives: state.archives.filter((call) => call.id !== action.payload.id) };
+        return { ...state, calls: [...state.calls], archives: state.archives.filter((call) => call.id !== action.payload) };
 
     else if (action.type === SET_UNARCHIVE_FAILURE)
         return { ...state, error: action.payload };

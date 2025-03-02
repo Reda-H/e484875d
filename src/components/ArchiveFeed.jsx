@@ -1,16 +1,17 @@
-import { Box, List, ListItem } from "@mui/material";
+import { connect, useSelector } from "react-redux";
+import { getArchives, setUnarchiveCall } from "../services/api";
+import { List, ListItem } from "@mui/material";
 import CallEntry from "./CallEntry.jsx";
 import { useEffect } from "react";
-import { connect } from "react-redux";
-import { getCalls, setArchiveCall } from "../services/api.js";
 
-const CallFeed = (props) => {
+const ArchiveFeed = (props) => {
+
     useEffect(() => {
-        props.getCalls();
+        props.getArchives();
     }, []);
 
-    const archive = (call) => {
-        props.setArchiveCall(call.id);
+    const unarchive = (call) => {
+        props.setUnarchiveCall(call.id);
     }
 
     return (
@@ -29,7 +30,7 @@ const CallFeed = (props) => {
                 }}
                 subheader={<li />}
             >
-                {props.calls && props.calls.filter(call => !call.is_archived).map((call) => (
+                {props.archives && props.archives.map((call) => (
                     <ListItem
                         key={call.id}
                         sx={{
@@ -38,14 +39,13 @@ const CallFeed = (props) => {
                             backgroundColor: "transparent",
                         }}
                     >
-                        <CallEntry call={call} action={archive} />
+                        <CallEntry call={call} archived action={unarchive} />
                     </ListItem>
                 ))}
             </List>
         </div>
     );
 }
-
 
 const mapStateToProps = (state) => {
     return {
@@ -55,4 +55,4 @@ const mapStateToProps = (state) => {
     }
 }
 
-export default connect(mapStateToProps, { getCalls, setArchiveCall })(CallFeed);
+export default connect(mapStateToProps, { getArchives, setUnarchiveCall })(ArchiveFeed);

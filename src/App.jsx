@@ -5,7 +5,7 @@ import { Route, Switch } from "react-router-dom/cjs/react-router-dom.js";
 import Header from "./components/Header.jsx";
 import Footer from "./components/Footer.jsx";
 
-import Archives from "./components/Archives.jsx";
+import ArchiveFeed from "./components/ArchiveFeed.jsx";
 import CallFeed from "./components/CallFeed.jsx";
 
 
@@ -24,7 +24,7 @@ const App = () => {
         </Route>
         <Route exact path="/archives">
           <div className="container-view">
-            <Archives />
+            <ArchiveFeed />
           </div>
         </Route>
       </Switch>

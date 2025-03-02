@@ -33,6 +33,13 @@
   -ms-overflow-style: none;
 }
 
+.archived-tag {
+  height: 111px;
+  background-color: #fcbc2b;
+  width: 16px;
+  z-index: 2;
+}
+
 .nunito-sans-100 {
   font-family: "Nunito Sans", serif;
   font-optical-sizing: auto;

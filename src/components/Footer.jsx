@@ -6,16 +6,22 @@ import { Link } from "react-router-dom/cjs/react-router-dom";
 const Footer = () => {
 
     return (
-        <footer style={{ display: "flex", justifyContent: "space-around", backgroundColor: "#F0F2F6", height: "fit-content" }}>
-            <Link style={{ width: "100%" }} to="/">
+        <footer style={{
+            display: "flex",
+            justifyContent: "space-around",
+            backgroundColor: "#F0F2F6",
+            height: "fit-content",
+            borderTop: "1px solid rgba(0, 0, 0, 0.4)"
+        }}>
+            <Link style={{ width: "100%", borderRight: "1px solid rgba(0,0,0,0.4)" }} to="/">
                 <Button sx={{
                     color: "white",
                     width: "100%",
                     height: '100%',
-                    backgroundColor: "#05B58B",
+                    backgroundColor: "rgba(5, 181, 139, 0.8)",
                     borderRadius: 0,
                     "&:hover": {
-                        color: "black"
+                        backgroundColor: "#05B58B"
                     }
                 }}
                     startIcon={<Phone />}>
