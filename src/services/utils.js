@@ -42,6 +42,7 @@ export const formatCallDuration = (duration) => {
 };
 
 export const formatPhoneNumber = (phoneNumber) => {
+    if (!phoneNumber) return;
     const strPhoneNumber = phoneNumber.toString();
     if (strPhoneNumber.length === 10)
         return `(${strPhoneNumber.slice(0, 3)}) ${strPhoneNumber.slice(
@@ -55,3 +56,8 @@ export const formatPhoneNumber = (phoneNumber) => {
         )}) ${strPhoneNumber.slice(4, 7)}-${strPhoneNumber.slice(7)}`;
     return strPhoneNumber;
 };
+
+export const getUniqueCalls = calls => calls.filter(
+    (call, index, self) =>
+        index === self.findIndex(c => c.id === call.id)
+);

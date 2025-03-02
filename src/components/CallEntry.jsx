@@ -1,6 +1,7 @@
-import { Box, Button, Card } from "@mui/material";
+import { Box, Button, Card, Divider, Typography } from "@mui/material";
 import { ArchiveIcon, PhoneInbound, PhoneOutbound } from "../icons";
 import { formatCallDuration, formatPhoneNumber } from "../services/utils";
+import React from "react";
 
 const CallEntry = ({ call, action }) => {
   const callDirection = {
@@ -8,119 +9,105 @@ const CallEntry = ({ call, action }) => {
     outbound: <PhoneOutbound />,
   };
 
+  const getMainNumber = () => {
+    return call.direction === "inbound"
+      ? formatPhoneNumber(call.from)
+      : formatPhoneNumber(call.to);
+  }
+
+  const getRecipientNumber = () => {
+    return "on " + call.direction === "inbound"
+      ? formatPhoneNumber(call.to)
+      : formatPhoneNumber(call.from)
+  }
+
   return (
     <Card
-      className="call-entry"
       sx={{
         width: "100%",
-        display: "flex",
-        flexDirection: "row",
         boxShadow: "none",
-        borderRadius: "12px",
+        borderRadius: 2,
         position: "relative",
       }}
     >
-      <div style={{ width: "100%" }}>
+      <Box width="100%">
         <Box
-          component="div"
-          sx={{
-            display: "flex",
-            flexDirection: "row",
-            gap: "16px",
-            padding: "12px",
-          }}
+          display="flex"
+          gap={2}
+          px={1.5}
+          pt={1}
+          pb={.5}
         >
-          <div
-            style={{ minWidth: "42px", display: "flex", alignItems: "center" }}
+          <Box
+            minWidth={42}
+            display="flex"
+            alignItems="center"
           >
             {callDirection[call.direction] || <PhoneOutbound />}
-          </div>
-          <div
-            style={{
-              width: "100%",
-              display: "flex",
-              flexDirection: "column",
-              gap: "4px",
-            }}
-          >
-            <div style={{ display: "flex", justifyContent: "space-between" }}>
-              <span
-                className={`nunito-sans-500 ${call.call_type}`}
-                style={{
-                  textTransform: "capitalize",
-                  fontWeight: "bold",
-                  fontSize: "14px",
-                }}
+          </Box>
+
+          <Box width="100%" display="flex" flexDirection="column">
+            <Box display="flex" justifyContent="space-between">
+              <Typography
+                variant="body2"
+                fontWeight="bold"
+                textTransform="capitalize"
+                className={call.call_type}
               >
                 {call.call_type}
-              </span>
-              <span
-                className="nunito-sans-600"
-                style={{ fontSize: "14px" }}
-              >
+              </Typography>
+              <Typography variant="body2" fontWeight={600} m={0}>
                 {formatCallDuration(call.duration)}
-              </span>
-            </div>
-            <span
-              className="nunito-sans-800"
-              style={{ fontSize: "18px" }}
-            >
-              {call.direction === "inbound"
-                ? formatPhoneNumber(call.from)
-                : formatPhoneNumber(call.to)}
-            </span>
-            <div style={{ display: "flex", flexDirection: "column" }}>
-              <span className="noto-sans-500" style={{ fontSize: "14px" }}>
-                on{" "}
-                {call.direction === "inbound"
-                  ? formatPhoneNumber(call.to)
-                  : formatPhoneNumber(call.from)}
-              </span>
-            </div>
-          </div>
+              </Typography>
+            </Box>
+
+            <Typography variant="h6" fontWeight={800}>
+              {getMainNumber()}
+            </Typography>
+
+            <Typography variant="body2" color="text.secondary">
+              {getRecipientNumber()}
+            </Typography>
+          </Box>
         </Box>
+
+        <Divider sx={{ opacity: 0.4 }} />
+
         <Box
-          sx={{
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "space-between",
-            borderTop: "1px solid rgba(0, 0, 0, 0.4)",
-            width: "100%",
-            minHeight: "25px",
-            paddingLeft: "16px",
-          }}
+          display="flex"
+          justifyContent="space-between"
+          alignItems="center"
+          pl={2}
         >
-          <p
-            className="noto-sans-600"
-            style={{
-              marginTop: "8px",
-              marginBottom: "8px",
-            }}
-          >
+          <Typography variant="body2" fontWeight={600}>
             via {formatPhoneNumber(call.via)}
-          </p>
-          <Button
-            variant="contained"
-            endIcon={<ArchiveIcon />}
-            sx={{
-              marginRight: "14px",
-              borderRadius: 0,
-              backgroundColor: "rgb(5, 175, 181)",
-              "&:hover": {
-                backgroundColor: "#05B58B",
-              },
-              boxShadow: "none",
-              paddingTop: "4px",
-              paddingBottom: "3px",
-            }}
-            onClick={() => action(call)}
-          >
-            Details
-          </Button>
+          </Typography>
+
+          <DetailButton action={action} call={call} />
         </Box>
-      </div>
+      </Box>
     </Card>
   );
 };
 
-export default CallEntry;
+const DetailButton = ({ action, call }) => (
+  <Button
+    variant="contained"
+    endIcon={<ArchiveIcon />}
+    sx={{
+      borderRadius: 0,
+      backgroundColor: "rgb(5, 175, 181)",
+      "&:hover": {
+        backgroundColor: "#05B58B",
+      },
+      boxShadow: "none",
+      paddingTop: "4px",
+      paddingBottom: "3px",
+    }}
+    onClick={() => action(call)}
+  >
+    Details
+  </Button>
+)
+
+export default React.memo(CallEntry);

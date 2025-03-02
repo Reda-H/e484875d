@@ -48,10 +48,10 @@ const reducer = (state = initialState, action) => {
         return { ...state, error: action.payload };
 
     else if (action.type === ARCHIVE_ALL_SUCCESS)
-        return { ...state, calls: [], archives: [...state.calls, ...state.archives] }
+        return { ...state, calls: [], archives: [...state.calls, ...state.archives].filter(call => call.is_archived) }
 
     else if (action.type === UNARCHIVE_ALL_SUCCESS)
-        return { ...state, calls: [...state.calls, ...state.archives], archives: [] }
+        return { ...state, calls: [...state.calls, ...state.archives].filter(call => !call.is_archived), archives: [] }
 
     else return state;
 }

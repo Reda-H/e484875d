@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import { connect } from "react-redux";
-import { Route, Switch } from "react-router-dom/cjs/react-router-dom.js";
+import React, { useCallback, useState } from "react";
+import { connect, useDispatch, useSelector } from "react-redux";
+import { Route, Switch, useLocation } from "react-router-dom/cjs/react-router-dom.js";
 
 import Header from "./components/Header.jsx";
 import Footer from "./components/Footer.jsx";
@@ -9,37 +9,39 @@ import ArchiveFeed from "./components/ArchiveFeed.jsx";
 import CallFeed from "./components/CallFeed.jsx";
 import { archiveAllCalls, setArchiveCall, setUnarchiveCall } from "./services/api.js";
 import { Box, Button, Chip, Divider, Drawer, Stack, Typography } from "@mui/material";
-import { formatPhoneNumber } from "./services/utils.js";
+import { formatCallDuration, formatPhoneNumber } from "./services/utils.js";
 
 
 const App = (props) => {
 
+  const dispatch = useDispatch();
+  const location = useLocation();
+
   const [openDrawer, setOpenDrawer] = useState(false);
   const [selectedCall, setSelectedCall] = useState(null);
 
-  const toggleOpenDrawer = (call = null) => {
-    if (openDrawer) {
-      setOpenDrawer(false);
-      setSelectedCall(null);
-      return;
-    }
+  const toggleOpenDrawer = useCallback((call = null) => {
+    setOpenDrawer(prev => !prev);
+    setSelectedCall(prev => call ?? null);
+  }, []);
 
-    setOpenDrawer(true);
-    setSelectedCall(call);
-  }
+  const handleArchive = useCallback(() => {
+    if (!selectedCall) return;
 
+    const action = selectedCall.is_archived ? setUnarchiveCall : setArchiveCall;
+    dispatch(action(selectedCall.id));
+    setOpenDrawer(false);
+  }, [selectedCall, dispatch]);
 
-  const formatDuration = (seconds) => {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${minutes}m ${remainingSeconds}s`;
-  };
+  const getStatusColor = useCallback((callType) => {
+    const statusMap = {
+      missed: 'error',
+      answered: 'success',
+      voicemail: 'warning'
+    };
+    return statusMap[callType] || 'warning';
+  }, []);
 
-  const onArchive = (call) => {
-    toggleOpenDrawer();
-    if (call.is_archived) props.setUnarchiveCall(call.id)
-    else props.setArchiveCall(call.id);
-  }
 
   return (
     <section
@@ -93,19 +95,13 @@ const App = (props) => {
                 <strong>Via:</strong> {formatPhoneNumber(selectedCall.via)}
               </Typography>
               <Typography variant="body1">
-                <strong>Duration:</strong> {formatDuration(selectedCall.duration)}
+                <strong>Duration:</strong> {formatCallDuration(selectedCall.duration)}
               </Typography>
               <Typography component={"span"} variant="body1">
                 <strong>Status:</strong>{" "}
                 <Chip
                   label={selectedCall.call_type}
-                  color={
-                    selectedCall.call_type === "missed"
-                      ? "error"
-                      : selectedCall.call_type === "answered"
-                        ? "success"
-                        : "warning"
-                  }
+                  color={getStatusColor()}
                   size="small"
                 />
               </Typography>
@@ -124,7 +120,7 @@ const App = (props) => {
                 variant="contained"
                 color="primary"
                 fullWidth
-                onClick={() => onArchive(selectedCall)}
+                onClick={() => handleArchive(selectedCall)}
               >
                 {selectedCall.is_archived ? "Unarchive Call" : "Archive Call"}
               </Button>
@@ -136,12 +132,4 @@ const App = (props) => {
   );
 };
 
-const mapStateToProps = (state) => {
-  return ({
-    calls: state.calls,
-    archives: state.archives,
-    error: state.error
-  })
-}
-
-export default connect(mapStateToProps, { archiveAllCalls, setArchiveCall, setUnarchiveCall })(App);
+export default React.memo(App);
